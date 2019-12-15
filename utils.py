@@ -8,7 +8,7 @@ def unpickle(file):
 
 def getData(file):
     file_content = unpickle(file)
-    features = file_content['data']
+    features = file_content['data'].reshape(file_content['data'].shape[0], 3, 32, 32).transpose(0, 2, 3, 1)
     labels = file_content['labels']
     return features, labels
 
