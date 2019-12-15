@@ -1,0 +1,2 @@
+# Residual_Attention_Network_for_Image_Classification
+Implementation of the Residual Attention Network
