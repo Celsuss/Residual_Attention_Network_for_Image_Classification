@@ -1,4 +1,5 @@
 import pickle
+import numpy as np
 
 def unpickle(file):
     with open(file, 'rb') as fo:
@@ -8,7 +9,7 @@ def unpickle(file):
 
 def getData(file):
     file_content = unpickle(file)
-    features = file_content['data'].reshape(file_content['data'].shape[0], 3, 32, 32).transpose(0, 2, 3, 1)
+    features = file_content['data'].reshape(file_content['data'].shape[0], 3, 32, 32).transpose(0, 2, 3, 1).astype(np.float32)
     labels = file_content['labels']
     return features, labels
 
