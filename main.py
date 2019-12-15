@@ -7,6 +7,7 @@ from models.model import AttentionResNet
 
 print('Tensorflow version: {}'.format(tf.__version__))
 
+# TODO: Uncomment this, only for debuging
 # @tf.function
 def trainStep(model, x, y, loss_op, optimizer, train_loss, train_accuracy):
     with tf.GradientTape() as tape:
@@ -19,7 +20,7 @@ def trainStep(model, x, y, loss_op, optimizer, train_loss, train_accuracy):
     train_loss(loss)
     train_accuracy(y, predictions)
     
-
+# TODO: Uncomment this, only for debuging
 # @tf.function
 def testStep(model, x, y, loss_op, test_loss, test_accuracy):
     predictions = model(x)
@@ -38,14 +39,14 @@ def train(model, x_train, y_train, x_test, y_test, loss_op, optimization, epochs
         n_batch = 0
         for x, y in zip(x_train, y_train):
             n_batch+=1
-            print('Batch {}/{}'.format(n_batch, len(x_train)))
+            print('Batch {}/{}'.format(n_batch, len(x_train)), end='\r')
             trainStep(model, x, y, loss_op, optimization, train_loss, train_accuracy)
             continue
 
-        testStep(x_test, y_test, loss_op, test_loss, test_accuracy)
+        testStep(model, x_test, y_test, loss_op, test_loss, test_accuracy)
 
         template = '[Epoch {}] Loss: {:.3f}, Accuracy: {:.2%}, Test Loss: {:.3f}, Test Accuracy: {:.2f}'
-        print(template.format(epoch, train_loss.result(), train_accuracy.result(),
+        print(template.format(epoch+1, train_loss.result(), train_accuracy.result(),
                 test_loss.result(), test_accuracy.result()))
 
         # Reset the metrics for the next epoch
