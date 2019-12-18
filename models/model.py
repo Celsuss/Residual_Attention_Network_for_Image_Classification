@@ -1,6 +1,7 @@
 import tensorflow as tf
 import tensorflow.keras as keras
 import tensorflow.keras.layers as layers
+from .attentionBlock import AttentionBlock
 
 class AttentionResNet(keras.Model):
     def __init__(self):
@@ -13,6 +14,7 @@ class AttentionResNet(keras.Model):
         self.flatten = layers.Flatten()
 
         # Add res and attention blocks here
+        self.attention1 = AttentionBlock()
         #
 
         self.dense1 = layers.Dense(128)
@@ -25,6 +27,7 @@ class AttentionResNet(keras.Model):
         x = self.pool1(x)
 
         # Add res and attention blocks here
+        x = self.attention1(x)
         #
 
         x = self.flatten(x)
