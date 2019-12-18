@@ -1,3 +1,4 @@
 data/*
 .vscode/settings.json
 __pycache__/*
+models/__pycache__/*
