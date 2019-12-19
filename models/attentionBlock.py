@@ -4,7 +4,7 @@ import tensorflow.keras.layers as layers
 from .residualBlock import ResidualBlock
 
 class AttentionBlock(keras.Model):
-    def __init__(self, p=1, t=2, r=1):
+    def __init__(self, channels=64, p=1, t=2, r=1):
         super(AttentionBlock, self).__init__()
         """
         Hyperparameters p, t and r.
@@ -20,13 +20,13 @@ class AttentionBlock(keras.Model):
         self.r_residual_units = []
         
         for i in range(p):
-            self.p_residual_units.append(ResidualBlock())
+            self.p_residual_units.append(ResidualBlock(channels, channels))
         for i in range(t):
-            self.t_residual_units.append(ResidualBlock())
+            self.t_residual_units.append(ResidualBlock(channels, channels))
         for i in range(r):
-            self.r_residual_units.append(ResidualBlock())
+            self.r_residual_units.append(ResidualBlock(channels, channels))
 
-    def call(self, x):
+    def call(self, x, input_channels=None):
         """
         Mask branch and trunk branch.
         
@@ -38,6 +38,10 @@ class AttentionBlock(keras.Model):
 
         Output Hi,c(x) = (1 + Mi,c(x)) ∗ Fi,c(x)
         """
+
+        if input_channels is None:
+            input_channels = x.get_shape()[-1]
+            output_channels = input_channels // 4
 
         for res_unit in self.p_residual_units:
             x = res_unit(x)

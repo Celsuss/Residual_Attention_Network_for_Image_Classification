@@ -14,7 +14,7 @@ class AttentionResNet(keras.Model):
         self.flatten = layers.Flatten()
 
         # Add res and attention blocks here
-        self.attention1 = AttentionBlock()
+        self.attention1 = AttentionBlock(64)
         #
 
         self.dense1 = layers.Dense(128)

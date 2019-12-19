@@ -3,15 +3,20 @@ import tensorflow.keras as keras
 import tensorflow.keras.layers as layers
 
 class ResidualBlock(keras.Model):
-    def __init__(self, kernel_size=(3, 3), strides=(1, 1)):
+    def __init__(self, input_channels=64, output_channels=64, kernel_size=(3, 3), strides=(1, 1)):
         super(ResidualBlock, self).__init__()
-        output_channels = x.getshape()[-1].value
-        input_channels = output_channels // 4
+        # output_channels = x.getshape()[-1].value
+        # input_channels = output_channels // 4
 
-        self.conv2D1 = layers.Conv2D(input_channels, kernel_size=(1,1))
-        self.conv2D2 = layers.Conv2D(32, kernel_size=kernel_size, strides=strides, padding='same')
-        self.conv2D3 = layers.Conv2D(output_channels, kernel_size=(1,1))
+        self.conv2D1 = layers.Conv2D(input_channels, (1,1))
+        self.conv2D2 = layers.Conv2D(input_channels, kernel_size, padding='same', strides=strides)
+        self.conv2D3 = layers.Conv2D(output_channels, (1,1), padding='same')
         self.batchNorm = layers.BatchNormalization()
+        
+        if input_channels != output_channels:
+            self.conv2D4 = layers.Conv2D(output_channels, (1, 1), padding='same', strides=strides)
+        else:
+            self.conv2D4 = None
 
     def call(self, x):
         input = x
@@ -27,6 +32,9 @@ class ResidualBlock(keras.Model):
         x = self.batchNorm(x)
         x = tf.nn.relu(x)
         x = self.conv2D3(x)
+
+        if self.conv2d4 != None:
+            input = self.conv2d4(input)
 
         x = layers.Add([x, input])
         return x
