@@ -62,17 +62,19 @@ def main():
     learning_rate = 0.1 # 0.01
     epochs = 5
 
-    test_files = ['data/cifar-10/cifar-10-batches-py/data_batch_1', 'data/cifar-10/cifar-10-batches-py/data_batch_2', 'data/cifar-10/cifar-10-batches-py/data_batch_3',
-                'data/cifar-10/cifar-10-batches-py/data_batch_4', 'data/cifar-10/cifar-10-batches-py/data_batch_5']
-    test_file = 'data/cifar-10/cifar-10-batches-py/test_batch'
-    train_data, train_labels = utils.getTrainData(test_files)
-    test_data, test_labels = utils.getTestData(test_file)
+    # test_files = ['data/cifar-10/cifar-10-batches-py/data_batch_1', 'data/cifar-10/cifar-10-batches-py/data_batch_2', 'data/cifar-10/cifar-10-batches-py/data_batch_3',
+    #             'data/cifar-10/cifar-10-batches-py/data_batch_4', 'data/cifar-10/cifar-10-batches-py/data_batch_5']
+    # test_file = 'data/cifar-10/cifar-10-batches-py/test_batch'
+    # train_data, train_labels = utils.getTrainData(test_files)
+    # test_data, test_labels = utils.getTestData(test_file)
 
-    IMG_HEIGHT = train_data[0].shape[1]
-    IMG_WIDTH = train_data[0].shape[2]
-    CHANNELS = train_data[0].shape[3]
+    train_data, train_labels, test_data, test_labels = utils.getCifar10Dataset()
 
-    utils.drawImages(train_data[0][0:5], train_labels[0][0:5])
+    IMG_HEIGHT = train_data.shape[1]
+    IMG_WIDTH = train_data.shape[2]
+    CHANNELS = train_data.shape[3]
+
+    utils.drawImages(train_data[:5], train_labels[:5])
 
     # Reference model
     # model = RefConvNet()
