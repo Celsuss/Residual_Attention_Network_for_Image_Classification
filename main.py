@@ -3,6 +3,7 @@ import tensorflow.keras as keras
 import tensorflow as tf
 import numpy as np
 import utils
+import dataProcessing
 from models.model import AttentionResNet
 from models.refModel import RefConvNet
 
@@ -30,17 +31,19 @@ def testStep(model, x, y, loss_op, test_loss, test_accuracy):
     test_loss(loss)
     test_accuracy(y, predictions)
 
-def train(model, x_train, y_train, x_test, y_test, loss_op, optimization, epochs):
+# def train(model, x_train, y_train, x_test, y_test, loss_op, optimization, epochs):
+def train(model, train_data, x_test, y_test, loss_op, optimization, epochs):
     train_loss = tf.keras.metrics.Mean(name='train_loss')
-    train_accuracy = tf.keras.metrics.SparseCategoricalAccuracy(name='train_accuracy')
+    train_accuracy = tf.keras.metrics.CategoricalAccuracy(name='train_accuracy')
     test_loss = tf.keras.metrics.Mean(name='test_loss')
-    test_accuracy = tf.keras.metrics.SparseCategoricalAccuracy(name='test_accuracy')
+    test_accuracy = tf.keras.metrics.CategoricalAccuracy(name='test_accuracy')
 
     for epoch in range(epochs):
         n_batch = 0
-        for x, y in zip(x_train, y_train):
+        # for x, y in zip(x_train, y_train):
+        for x, y in train_data:
             n_batch+=1
-            print('Batch {}/{}'.format(n_batch, len(x_train)), end='\r')
+            print('Batch {}/{}'.format(n_batch, len(train_data)), end='\r')     # train_data.total_batches_seen
             trainStep(model, x, y, loss_op, optimization, train_loss, train_accuracy)
             continue
 
@@ -58,6 +61,11 @@ def train(model, x_train, y_train, x_test, y_test, loss_op, optimization, epochs
 
     return model
 
+def getData():
+    x_train, y_train, x_test, y_test = utils.getCifar10Dataset()
+    train_data, x_test, y_test = dataProcessing.preprocessData(x_train, y_train, x_test, y_test, batch_size=128)
+    return train_data, x_test, y_test
+
 def main():
     learning_rate = 0.1 # 0.01
     epochs = 5
@@ -68,13 +76,13 @@ def main():
     # train_data, train_labels = utils.getTrainData(test_files)
     # test_data, test_labels = utils.getTestData(test_file)
 
-    train_data, train_labels, test_data, test_labels = utils.getCifar10Dataset()
+    train_data, x_test, y_test = getData()
 
-    IMG_HEIGHT = train_data.shape[1]
-    IMG_WIDTH = train_data.shape[2]
-    CHANNELS = train_data.shape[3]
+    IMG_HEIGHT = x_test.shape[1]
+    IMG_WIDTH = x_test.shape[2]
+    CHANNELS = x_test.shape[3]
 
-    utils.drawImages(train_data[:5], train_labels[:5])
+    # utils.drawImages(train_data[:5], train_labels[:5])
 
     # Reference model
     # model = RefConvNet()
@@ -90,14 +98,14 @@ def main():
         layers.Dense(10, activation='sigmoid')
     ])
 
-    loss_op = keras.losses.SparseCategoricalCrossentropy()
+    loss_op = keras.losses.CategoricalCrossentropy()
     optimizer = keras.optimizers.Adam(lr=learning_rate)
-    train(model, train_data, train_labels, test_data, test_labels, loss_op, optimizer, epochs)
+    train(model, train_data, x_test, y_test, loss_op, optimizer, epochs)
     #
     
     # model = AttentionResNet()
     # # loss_op = keras.losses.sparse_softmax_cross_entropy
-    # loss_op = keras.losses.SparseCategoricalCrossentropy()
+    # loss_op = keras.losses.CategoricalCrossentropy()
     # optimizer = keras.optimizers.Adam(lr=learning_rate)
     # train(model, train_data, train_labels, test_data, test_labels, loss_op, optimizer, epochs)
 
