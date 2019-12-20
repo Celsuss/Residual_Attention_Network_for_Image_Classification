@@ -1,5 +1,6 @@
 import pickle
 import numpy as np
+import matplotlib.pyplot as plt
 
 def unpickle(file):
     with open(file, 'rb') as fo:
@@ -25,3 +26,26 @@ def getTrainData(files):
 
 def getTestData(file):
     return getData(file)
+
+def drawImage(image, label=None):
+    fig, ax = plt.subplots()
+    ax.axis('off')
+    if label != None:
+        ax.set_title(label)
+
+    ax.imshow(image)
+    plt.show()
+    return 0
+
+# Draw an array of images.
+def drawImages(images, labels=None):
+    for i in range(len(images)):
+        image = images[i]
+        fig, ax = plt.subplots()
+        ax.axis('off')
+        if labels != None and len(labels) >= len(images):
+            ax.set_title(labels[i])
+        ax.imshow(image)
+
+    plt.show()
+    return 0
