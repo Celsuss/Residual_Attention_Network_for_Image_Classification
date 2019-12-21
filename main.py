@@ -98,17 +98,17 @@ def main():
     drawTestData(train_data, 5)
 
     # Reference model
-    model = RefConvNet(16, input_shape=(IMG_HEIGHT, IMG_WIDTH, CHANNELS))
+    # model = RefConvNet(16, input_shape=(IMG_HEIGHT, IMG_WIDTH, CHANNELS))
 
-    loss_op = keras.losses.CategoricalCrossentropy()
-    optimizer = keras.optimizers.Adam(lr=learning_rate)
-    train(model, train_data, x_test, y_test, loss_op, optimizer, epochs)
-    
-    # AttentionResNet
-    # model = AttentionResNet()
     # loss_op = keras.losses.CategoricalCrossentropy()
     # optimizer = keras.optimizers.Adam(lr=learning_rate)
     # train(model, train_data, x_test, y_test, loss_op, optimizer, epochs)
+    
+    # AttentionResNet
+    model = AttentionResNet()
+    loss_op = keras.losses.CategoricalCrossentropy()
+    optimizer = keras.optimizers.Adam(lr=learning_rate)
+    train(model, train_data, x_test, y_test, loss_op, optimizer, epochs)
 
     return 0
 
