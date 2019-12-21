@@ -38,18 +38,24 @@ def train(model, train_data, x_test, y_test, loss_op, optimization, epochs):
     test_loss = tf.keras.metrics.Mean(name='test_loss')
     test_accuracy = tf.keras.metrics.CategoricalAccuracy(name='test_accuracy')
 
+    n_batches = len(train_data)
+
     for epoch in range(epochs):
         n_batch = 0
         # for x, y in zip(x_train, y_train):
         for x, y in train_data:
             n_batch+=1
-            print('Batch {}/{}'.format(n_batch, len(train_data)), end='\r')     # train_data.total_batches_seen
+            print('Batch {}/{}'.format(n_batch, n_batches), end='\r')
             trainStep(model, x, y, loss_op, optimization, train_loss, train_accuracy)
-            continue
+            
+            if n_batch >= n_batches:
+                # we need to break the loop by hand because
+                # the generator loops indefinitely
+                break
 
         testStep(model, x_test, y_test, loss_op, test_loss, test_accuracy)
 
-        template = '[Epoch {}] Loss: {:.3f}, Accuracy: {:.2%}, Test Loss: {:.3f}, Test Accuracy: {:.2f}'
+        template = '[Epoch {}] Loss: {:.3f}, Accuracy: {:.2%}, Test Loss: {:.3f}, Test Accuracy: {:.2%}'
         print(template.format(epoch+1, train_loss.result(), train_accuracy.result(),
                 test_loss.result(), test_accuracy.result()))
 
