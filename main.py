@@ -31,7 +31,6 @@ def testStep(model, x, y, loss_op, test_loss, test_accuracy):
     test_loss(loss)
     test_accuracy(y, predictions)
 
-# def train(model, x_train, y_train, x_test, y_test, loss_op, optimization, epochs):
 def train(model, train_data, x_test, y_test, loss_op, optimization, epochs):
     train_loss = tf.keras.metrics.Mean(name='train_loss')
     train_accuracy = tf.keras.metrics.CategoricalAccuracy(name='train_accuracy')
@@ -42,7 +41,6 @@ def train(model, train_data, x_test, y_test, loss_op, optimization, epochs):
 
     for epoch in range(epochs):
         n_batch = 0
-        # for x, y in zip(x_train, y_train):
         for x, y in train_data:
             n_batch+=1
             print('Batch {}/{}'.format(n_batch, n_batches), end='\r')
@@ -72,8 +70,17 @@ def getData():
     train_data, x_test, y_test = dataProcessing.preprocessData(x_train, y_train, x_test, y_test, batch_size=128)
     return train_data, x_test, y_test
 
+def drawTestData(data, n_images):
+    for x_batch, y_batch in data:
+        images = x_batch[:n_images]
+        labels = y_batch[:n_images]
+        break
+
+    utils.drawImages(images, labels)
+    return 0
+
 def main():
-    learning_rate = 0.1 # 0.01
+    learning_rate = 0.001
     epochs = 5
 
     # test_files = ['data/cifar-10/cifar-10-batches-py/data_batch_1', 'data/cifar-10/cifar-10-batches-py/data_batch_2', 'data/cifar-10/cifar-10-batches-py/data_batch_3',
@@ -88,32 +95,20 @@ def main():
     IMG_WIDTH = x_test.shape[2]
     CHANNELS = x_test.shape[3]
 
-    # utils.drawImages(train_data[:5], train_labels[:5])
+    drawTestData(train_data, 5)
 
     # Reference model
-    # model = RefConvNet()
-    model = keras.Sequential([
-        layers.Conv2D(16, 3, padding='same', activation='relu', input_shape=(IMG_HEIGHT, IMG_WIDTH, CHANNELS)),
-        layers.MaxPooling2D(),
-        layers.Conv2D(32, 3, padding='same', activation='relu'),
-        layers.MaxPooling2D(),
-        layers.Conv2D(64, 3, padding='same', activation='relu'),
-        layers.MaxPooling2D(),
-        layers.Flatten(),
-        layers.Dense(512, activation='relu'),
-        layers.Dense(10, activation='sigmoid')
-    ])
+    model = RefConvNet(16, input_shape=(IMG_HEIGHT, IMG_WIDTH, CHANNELS))
 
     loss_op = keras.losses.CategoricalCrossentropy()
     optimizer = keras.optimizers.Adam(lr=learning_rate)
     train(model, train_data, x_test, y_test, loss_op, optimizer, epochs)
-    #
     
+    # AttentionResNet
     # model = AttentionResNet()
-    # # loss_op = keras.losses.sparse_softmax_cross_entropy
     # loss_op = keras.losses.CategoricalCrossentropy()
     # optimizer = keras.optimizers.Adam(lr=learning_rate)
-    # train(model, train_data, train_labels, test_data, test_labels, loss_op, optimizer, epochs)
+    # train(model, train_data, x_test, y_test, loss_op, optimizer, epochs)
 
     return 0
 
