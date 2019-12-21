@@ -8,11 +8,13 @@ class ResidualBlock(keras.Model):
         # output_channels = x.getshape()[-1].value
         # input_channels = output_channels // 4
 
+        self.add = layers.Add()
+
         self.conv2D1 = layers.Conv2D(input_channels, (1,1))
         self.conv2D2 = layers.Conv2D(input_channels, kernel_size, padding='same', strides=strides)
         self.conv2D3 = layers.Conv2D(output_channels, (1,1), padding='same')
         self.batchNorm = layers.BatchNormalization()
-        
+
         if input_channels != output_channels:
             self.conv2D4 = layers.Conv2D(output_channels, (1, 1), padding='same', strides=strides)
         else:
@@ -33,8 +35,8 @@ class ResidualBlock(keras.Model):
         x = tf.nn.relu(x)
         x = self.conv2D3(x)
 
-        if self.conv2d4 != None:
-            input = self.conv2d4(input)
+        if self.conv2D4 is not None:
+            input = self.conv2D4(input)
 
-        x = layers.Add([x, input])
+        x = self.add([x, input])
         return x

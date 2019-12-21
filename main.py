@@ -43,7 +43,8 @@ def train(model, train_data, x_test, y_test, loss_op, optimization, epochs):
         n_batch = 0
         for x, y in train_data:
             n_batch+=1
-            print('Batch {}/{}'.format(n_batch, n_batches), end='\r')
+            template = '[Batch {}/{}] Loss: {:.3f}, Accuracy: {:.2%}'
+            print(template.format(n_batch, n_batches, train_loss.result(), train_accuracy.result()), end='\r')
             trainStep(model, x, y, loss_op, optimization, train_loss, train_accuracy)
             
             if n_batch >= n_batches:
@@ -95,7 +96,7 @@ def main():
     IMG_WIDTH = x_test.shape[2]
     CHANNELS = x_test.shape[3]
 
-    drawTestData(train_data, 5)
+    # drawTestData(train_data, 5)
 
     # Reference model
     # model = RefConvNet(16, input_shape=(IMG_HEIGHT, IMG_WIDTH, CHANNELS))

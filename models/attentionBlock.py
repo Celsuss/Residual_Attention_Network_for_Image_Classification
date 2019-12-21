@@ -52,7 +52,6 @@ class AttentionBlock(keras.Model):
         x_mask = x
         x_mask = self.maskBranch(x_mask)
 
-
         return x
 
     def trunkBranch(self, x):
