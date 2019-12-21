@@ -4,7 +4,6 @@ import tensorflow.keras as keras
 import tensorflow.keras.preprocessing as preprocessing
 
 def normalize(x):
-    # x = x.astype(np.float32)
     x = x.astype("float32")
     x = x / 255.0
     return x
