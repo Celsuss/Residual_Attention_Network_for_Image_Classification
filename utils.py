@@ -33,6 +33,15 @@ def getCifar10Dataset():
     (x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
     return x_train, y_train, x_test, y_test
 
+def getMNISTDataset():
+    (x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
+
+    shape = x_train.shape
+    x_train = x_train.reshape(x_train.shape[0], shape[1], shape[2], 1)
+    x_test = x_test.reshape(x_test.shape[0], shape[1], shape[2], 1)
+
+    return x_train, y_train, x_test, y_test
+
 def drawImage(image, label=None):
     fig, ax = plt.subplots()
     ax.axis('off')
@@ -45,6 +54,9 @@ def drawImage(image, label=None):
 
 # Draw an array of images.
 def drawImages(images, labels=None):
+    if images.shape[3] == 1:
+        images = images.reshape(images.shape[0], images.shape[1], images.shape[2])
+
     n_rows = math.floor(len(images)/2)
     n_columns = math.ceil(len(images)/2)
     fig, axes = plt.subplots(n_rows, n_columns, figsize=(8,8))
@@ -63,3 +75,8 @@ def drawImages(images, labels=None):
     plt.tight_layout()
     plt.show()
     return 0
+
+if __name__ == '__main__':
+    x_train, y_train, x_test, y_test = getMNISTDataset()
+    n_images_to_draw = 6
+    drawImages(x_train[:n_images_to_draw], y_train[:n_images_to_draw])
