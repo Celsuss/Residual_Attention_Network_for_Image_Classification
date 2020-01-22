@@ -26,6 +26,18 @@ class AttentionBlock(keras.Model):
         for i in range(r):
             self.r_residual_units.append(ResidualBlock(channels, channels))
 
+        # Mask branch layers
+        self.down_sampling_units = []
+        self.up_sampling_units = []
+
+        n_down_sampling_units = 2
+        n_up_sampling_units = 2
+
+        for i in range(n_down_sampling_units):
+            self.down_sampling_units.append(layers.MaxPool2D(padding='same'))
+        for i in range(n_up_sampling_units):
+            self.up_sampling_units.append(layers.UpSampling2D())
+
     def call(self, x, input_channels=None):
         """
         Mask branch and trunk branch.
@@ -52,13 +64,33 @@ class AttentionBlock(keras.Model):
         x_mask = x
         x_mask = self.maskBranch(x_mask)
 
+        # Hi,c(x) = (1 + Mi,c(x)) ∗ Fi,c(x)
+        x = (1 + x_mask) * x_trunk
+
         return x
 
     def trunkBranch(self, x):
-
+        # Convolutions
+        # Use the residual block?
 
         return x
 
     def maskBranch(self, x):
+        # feed-forward sweep and top-down feedback
+
+        # Down sampling
+        for down_unit in self.down_sampling_units:
+            x = down_unit(x)
+            for res_unit in self.r_residual_units:
+                x = res_unit(x)
+
+        # Up sampling
+        for up_unit in self.up_sampling_units[:-1]:
+            x = up_unit(x)
+            for res_unit in self.r_residual_units:
+                x = res_unit(x)
+
+        # Last up sampling, no res units after this up sampling.
+        x = self.up_sampling_units[-1](x)
 
         return x
