@@ -38,6 +38,9 @@ class AttentionBlock(keras.Model):
         for i in range(n_up_sampling_units):
             self.up_sampling_units.append(layers.UpSampling2D())
 
+        self.lambd = layers.Lambda(lambda x: x + 1)
+        self.multiply = layers.Multiply()
+
     def call(self, x, input_channels=None):
         """
         Mask branch and trunk branch.
@@ -65,13 +68,17 @@ class AttentionBlock(keras.Model):
         x_mask = self.maskBranch(x_mask)
 
         # Hi,c(x) = (1 + Mi,c(x)) ∗ Fi,c(x)
-        x = (1 + x_mask) * x_trunk
+        x_mask = self.lambd(x_mask)
+        x = self.multiply([x_mask, x_trunk])
 
         return x
 
     def trunkBranch(self, x):
         # Convolutions
         # Use the residual block?
+
+        for res_unit in self.t_residual_units:
+            x = res_unit(x)
 
         return x
 
