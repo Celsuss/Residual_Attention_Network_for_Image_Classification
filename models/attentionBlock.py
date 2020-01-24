@@ -31,12 +31,18 @@ class AttentionBlock(keras.Model):
         self.up_sampling_units = []
 
         n_down_sampling_units = 2
-        n_up_sampling_units = 2
+        n_up_sampling_units = n_down_sampling_units
 
         for i in range(n_down_sampling_units):
             self.down_sampling_units.append(layers.MaxPool2D(padding='same'))
         for i in range(n_up_sampling_units):
             self.up_sampling_units.append(layers.UpSampling2D())
+
+        self.conv2D1 = layers.Conv2D(channels, (1,1))
+        self.conv2D2 = layers.Conv2D(channels, (1,1))
+        self.sigmoid1 = layers.Activation('sigmoid')
+
+        # End of mask branch layers
 
         self.lambd = layers.Lambda(lambda x: x + 1)
         self.multiply = layers.Multiply()
@@ -69,6 +75,8 @@ class AttentionBlock(keras.Model):
 
         # Hi,c(x) = (1 + Mi,c(x)) ∗ Fi,c(x)
         x_mask = self.lambd(x_mask)
+
+        # ValueError: Operands could not be broadcast together with shapes (8, 8, 64) (7, 7, 64)
         x = self.multiply([x_mask, x_trunk])
 
         return x
@@ -87,7 +95,6 @@ class AttentionBlock(keras.Model):
 
         # Down sampling
         for down_unit in self.down_sampling_units:
-            x = down_unit(x)
             for res_unit in self.r_residual_units:
                 x = res_unit(x)
 
@@ -99,5 +106,15 @@ class AttentionBlock(keras.Model):
 
         # Last up sampling, no res units after this up sampling.
         x = self.up_sampling_units[-1](x)
+
+        # The number of bilinear interpolation is the same
+        # as max pooling to keep the output size the same as the input
+        # feature map. Then a sigmoid layer normalizes the output
+        # range to [0, 1] after two consecutive 1 × 1 convolution layers. We also added skip connections between bottom-up
+        # and top-down parts to capture information from different scales
+
+        x = self.conv2D1(x)
+        x = self.conv2D2(x)
+        x = self.sigmoid1(x)
 
         return x
