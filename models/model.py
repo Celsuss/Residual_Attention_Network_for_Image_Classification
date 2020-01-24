@@ -5,9 +5,9 @@ from .attentionBlock import AttentionBlock
 from .residualBlock import ResidualBlock
 
 class AttentionResNet(keras.Model):
-    def __init__(self, channels=64):
+    def __init__(self, input_shape, channels=64):
         super(AttentionResNet, self).__init__()
-        self.conv1 = layers.Conv2D(channels, (7,7), strides=(2,2), padding='same')
+        self.conv1 = layers.Conv2D(channels, (7,7), strides=(2,2), padding='same', input_shape=input_shape)
         self.pool1 = layers.MaxPool2D(pool_size=(3,3), strides=(2,2), padding='same')
 
         self.batchNorm = layers.BatchNormalization()
