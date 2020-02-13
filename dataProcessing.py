@@ -8,15 +8,35 @@ def normalize(x):
     x = x / 255.0
     return x
 
-def preprocessData(x_train, y_train, x_test, y_test, batch_size=32):
+def preprocessData(x_train, y_train, x_test, y_test, batch_size=128):
     x_train = normalize(x_train)
     x_test = normalize(x_test)
 
     y_train = keras.utils.to_categorical(y_train)
     y_test = keras.utils.to_categorical(y_test)
 
-    generator = preprocessing.image.ImageDataGenerator(horizontal_flip=True)
-    train_batches = generator.flow(x_train, y_train, batch_size=batch_size)
-    # test_batches = generator.flow(x_test, y_test)
+    x_train = x_train.astype(np.float32)
+    x_test = x_test.astype(np.float32)
 
-    return train_batches, x_test, y_test
+    return x_train, y_train, x_test, y_test
+
+def createBatches(x, y, batch_size=128):
+    assert len(x) == len(y)
+    x_batches = []
+    y_batches = []
+    n_batches = round(len(x) / batch_size)
+
+    for i in range(n_batches):
+        index = i * batch_size
+
+        if index + batch_size >= len(x):
+            x_batch = x[index:]
+            y_batch = y[index:]
+        else:
+            x_batch = x[index:index+batch_size]
+            y_batch = y[index:index+batch_size]
+
+        x_batches.append(np.array(x_batch))
+        y_batches.append(np.array(y_batch))
+
+    return np.array(x_batches), np.array(y_batches)

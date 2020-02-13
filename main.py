@@ -31,26 +31,21 @@ def testStep(model, x, y, loss_op, test_loss, test_accuracy):
     test_loss(loss)
     test_accuracy(y, predictions)
 
-def train(model, train_data, x_test, y_test, loss_op, optimization, epochs):
+def train(model, x_train, y_train, x_test, y_test, loss_op, optimization, epochs):
     train_loss = tf.keras.metrics.Mean(name='train_loss')
     train_accuracy = tf.keras.metrics.CategoricalAccuracy(name='train_accuracy')
     test_loss = tf.keras.metrics.Mean(name='test_loss')
     test_accuracy = tf.keras.metrics.CategoricalAccuracy(name='test_accuracy')
 
-    n_batches = len(train_data)
+    n_batches = len(x_train)
 
     for epoch in range(epochs):
         n_batch = 0
-        for x, y in train_data:
+        for x, y in zip(x_train, y_train):
             n_batch+=1
-            template = '[Batch {}/{}] Loss: {:.3f}, Accuracy: {:.2%}'
-            print(template.format(n_batch, n_batches, train_loss.result(), train_accuracy.result()), end='\r')
+            template = '[Epoch {}/{}, Batch {}/{}] Loss: {:.3f}, Accuracy: {:.2%}'
+            print(template.format(epoch+1, epochs, n_batch, n_batches, train_loss.result(), train_accuracy.result()), end='\r')
             trainStep(model, x, y, loss_op, optimization, train_loss, train_accuracy)
-            
-            if n_batch >= n_batches:
-                # we need to break the loop by hand because
-                # the generator loops indefinitely
-                break
 
         testStep(model, x_test, y_test, loss_op, test_loss, test_accuracy)
 
@@ -67,9 +62,12 @@ def train(model, train_data, x_test, y_test, loss_op, optimization, epochs):
     return model
 
 def getData():
-    x_train, y_train, x_test, y_test = utils.getCifar10Dataset()
-    train_data, x_test, y_test = dataProcessing.preprocessData(x_train, y_train, x_test, y_test, batch_size=128)
-    return train_data, x_test, y_test
+    # x_train, y_train, x_test, y_test = utils.getCifar10Dataset()
+    x_train, y_train, x_test, y_test = utils.getMNISTDataset()
+
+    x_train, y_train, x_test, y_test = dataProcessing.preprocessData(x_train, y_train, x_test, y_test, batch_size=128)
+
+    return x_train, y_train, x_test, y_test
 
 def drawTestData(data, n_images):
     for x_batch, y_batch in data:
@@ -83,14 +81,10 @@ def drawTestData(data, n_images):
 def main():
     learning_rate = 0.001
     epochs = 5
+    batch_size = 128
 
-    # test_files = ['data/cifar-10/cifar-10-batches-py/data_batch_1', 'data/cifar-10/cifar-10-batches-py/data_batch_2', 'data/cifar-10/cifar-10-batches-py/data_batch_3',
-    #             'data/cifar-10/cifar-10-batches-py/data_batch_4', 'data/cifar-10/cifar-10-batches-py/data_batch_5']
-    # test_file = 'data/cifar-10/cifar-10-batches-py/test_batch'
-    # train_data, train_labels = utils.getTrainData(test_files)
-    # test_data, test_labels = utils.getTestData(test_file)
-
-    train_data, x_test, y_test = getData()
+    # train_data, x_test, y_test = getData()
+    x_train, y_train, x_test, y_test = getData()
 
     IMG_HEIGHT = x_test.shape[1]
     IMG_WIDTH = x_test.shape[2]
@@ -99,17 +93,39 @@ def main():
     # drawTestData(train_data, 5)
 
     # Reference model
-    # model = RefConvNet(16, input_shape=(IMG_HEIGHT, IMG_WIDTH, CHANNELS))
+    model = RefConvNet(32, input_shape=(IMG_HEIGHT, IMG_WIDTH, CHANNELS))
 
+    # model = keras.Sequential()
+    # model.add(layers.Conv2D(32, (3, 3), activation='relu', input_shape=(IMG_HEIGHT, IMG_WIDTH, CHANNELS)))
+    # model.add(layers.MaxPooling2D((2, 2)))
+    # model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+    # model.add(layers.MaxPooling2D((2, 2)))
+    # model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+    # model.add(layers.Flatten())
+    # model.add(layers.Dense(64, activation='relu'))
+    # model.add(layers.Dense(10, activation='softmax'))
+
+    # model.compile(optimizer='adam',
+    #           loss=tf.keras.losses.CategoricalCrossentropy(),
+    #           metrics=['accuracy'])
+
+    # history = model.fit(x_train, y_train, batch_size=batch_size, epochs=10, 
+    #                     validation_data=(x_test, y_test))
+
+
+    # print(model.summary())
+
+    x_train, y_train = dataProcessing.createBatches(x_train, y_train, batch_size)
+
+    loss_op = keras.losses.CategoricalCrossentropy()
+    optimizer = keras.optimizers.Adam(lr=learning_rate)
+    train(model, x_train, y_train, x_test, y_test, loss_op, optimizer, epochs)
+    
+    # AttentionResNet
+    # model = AttentionResNet()
     # loss_op = keras.losses.CategoricalCrossentropy()
     # optimizer = keras.optimizers.Adam(lr=learning_rate)
     # train(model, train_data, x_test, y_test, loss_op, optimizer, epochs)
-    
-    # AttentionResNet
-    model = AttentionResNet()
-    loss_op = keras.losses.CategoricalCrossentropy()
-    optimizer = keras.optimizers.Adam(lr=learning_rate)
-    train(model, train_data, x_test, y_test, loss_op, optimizer, epochs)
 
     return 0
 
