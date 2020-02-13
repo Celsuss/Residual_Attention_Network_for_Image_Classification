@@ -95,26 +95,6 @@ def main():
     # Reference model
     model = RefConvNet(32, input_shape=(IMG_HEIGHT, IMG_WIDTH, CHANNELS))
 
-    # model = keras.Sequential()
-    # model.add(layers.Conv2D(32, (3, 3), activation='relu', input_shape=(IMG_HEIGHT, IMG_WIDTH, CHANNELS)))
-    # model.add(layers.MaxPooling2D((2, 2)))
-    # model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-    # model.add(layers.MaxPooling2D((2, 2)))
-    # model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-    # model.add(layers.Flatten())
-    # model.add(layers.Dense(64, activation='relu'))
-    # model.add(layers.Dense(10, activation='softmax'))
-
-    # model.compile(optimizer='adam',
-    #           loss=tf.keras.losses.CategoricalCrossentropy(),
-    #           metrics=['accuracy'])
-
-    # history = model.fit(x_train, y_train, batch_size=batch_size, epochs=10, 
-    #                     validation_data=(x_test, y_test))
-
-
-    # print(model.summary())
-
     x_train, y_train = dataProcessing.createBatches(x_train, y_train, batch_size)
 
     loss_op = keras.losses.CategoricalCrossentropy()
