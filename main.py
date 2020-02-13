@@ -83,7 +83,6 @@ def main():
     epochs = 5
     batch_size = 128
 
-    # train_data, x_test, y_test = getData()
     x_train, y_train, x_test, y_test = getData()
 
     IMG_HEIGHT = x_test.shape[1]
