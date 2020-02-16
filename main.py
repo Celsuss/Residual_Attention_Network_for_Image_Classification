@@ -62,8 +62,8 @@ def train(model, x_train, y_train, x_test, y_test, loss_op, optimization, epochs
     return model
 
 def getData():
-    # x_train, y_train, x_test, y_test = utils.getCifar10Dataset()
-    x_train, y_train, x_test, y_test = utils.getMNISTDataset()
+    x_train, y_train, x_test, y_test = utils.getCifar10Dataset()
+    # x_train, y_train, x_test, y_test = utils.getMNISTDataset()
 
     x_train, y_train, x_test, y_test = dataProcessing.preprocessData(x_train, y_train, x_test, y_test, batch_size=128)
 
@@ -96,15 +96,15 @@ def main():
 
     x_train, y_train = dataProcessing.createBatches(x_train, y_train, batch_size)
 
+    # loss_op = keras.losses.CategoricalCrossentropy()
+    # optimizer = keras.optimizers.Adam(lr=learning_rate)
+    # train(model, x_train, y_train, x_test, y_test, loss_op, optimizer, epochs)
+    
+    # AttentionResNet
+    model = AttentionResNet((IMG_HEIGHT, IMG_WIDTH, CHANNELS))
     loss_op = keras.losses.CategoricalCrossentropy()
     optimizer = keras.optimizers.Adam(lr=learning_rate)
     train(model, x_train, y_train, x_test, y_test, loss_op, optimizer, epochs)
-    
-    # AttentionResNet
-    # model = AttentionResNet()
-    # loss_op = keras.losses.CategoricalCrossentropy()
-    # optimizer = keras.optimizers.Adam(lr=learning_rate)
-    # train(model, train_data, x_test, y_test, loss_op, optimizer, epochs)
 
     return 0
 

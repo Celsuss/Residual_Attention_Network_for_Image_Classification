@@ -30,6 +30,7 @@ class AttentionBlock(keras.Model):
         self.down_sampling_units = []
         self.up_sampling_units = []
 
+        # Always up-sample the same amount as down-sampling
         n_down_sampling_units = 2
         n_up_sampling_units = n_down_sampling_units
 
@@ -76,7 +77,7 @@ class AttentionBlock(keras.Model):
         # Hi,c(x) = (1 + Mi,c(x)) ∗ Fi,c(x)
         x_mask = self.lambd(x_mask)
 
-        # ValueError: Operands could not be broadcast together with shapes (8, 8, 64) (7, 7, 64)
+        # ValueError: Operands could not be broadcast together with shapes (28, 28, 64) (7, 7, 64)
         x = self.multiply([x_mask, x_trunk])
 
         return x
@@ -92,9 +93,11 @@ class AttentionBlock(keras.Model):
 
     def maskBranch(self, x):
         # feed-forward sweep and top-down feedback
+        input_shape = x.shape
 
         # Down sampling
         for down_unit in self.down_sampling_units:
+            x = down_unit(x)
             for res_unit in self.r_residual_units:
                 x = res_unit(x)
 
@@ -113,8 +116,12 @@ class AttentionBlock(keras.Model):
         # range to [0, 1] after two consecutive 1 × 1 convolution layers. We also added skip connections between bottom-up
         # and top-down parts to capture information from different scales
 
+        assert input_shape == x.shape
+
         x = self.conv2D1(x)
         x = self.conv2D2(x)
         x = self.sigmoid1(x)
+
+        assert input_shape == x.shape
 
         return x
