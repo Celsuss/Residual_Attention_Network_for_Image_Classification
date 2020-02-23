@@ -8,7 +8,7 @@ class ResidualBlock(keras.Model):
         # output_channels = x.getshape()[-1].value
         # input_channels = output_channels // 4
 
-        self.add = layers.Add()
+        self.skip_add = layers.Add()
 
         self.conv2D1 = layers.Conv2D(input_channels, (1,1))
         self.conv2D2 = layers.Conv2D(input_channels, kernel_size, padding='same', strides=strides)
@@ -40,5 +40,5 @@ class ResidualBlock(keras.Model):
             input = self.conv2D4(input)
 
         assert input_shape == x.shape
-        x = self.add([x, input])
+        x = self.skip_add([x, input])
         return x
