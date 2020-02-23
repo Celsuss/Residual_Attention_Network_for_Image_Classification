@@ -40,7 +40,7 @@ def main():
     # drawTestData(train_data, 5)
 
     # Reference model
-    model = RefConvNet(32, input_shape=(IMG_HEIGHT, IMG_WIDTH, CHANNELS))
+    # model = RefConvNet(32, input_shape=(IMG_HEIGHT, IMG_WIDTH, CHANNELS))
 
     x_train, y_train = dataProcessing.createBatches(x_train, y_train, batch_size)
 

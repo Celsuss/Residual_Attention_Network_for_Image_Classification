@@ -29,15 +29,19 @@ class AttentionBlock(keras.Model):
         # Mask branch layers
         self.down_sampling_units = []
         self.up_sampling_units = []
+        self.skip_sampling_units = []
 
         # Always up-sample the same amount as down-sampling
         n_down_sampling_units = 2
         n_up_sampling_units = n_down_sampling_units
+        n_skip_sampling_units = n_down_sampling_units
 
         for i in range(n_down_sampling_units):
             self.down_sampling_units.append(layers.MaxPool2D(padding='same'))
         for i in range(n_up_sampling_units):
             self.up_sampling_units.append(layers.UpSampling2D())
+        for i in range(n_skip_sampling_units):
+            self.skip_sampling_units.append(layers.Add())
 
         self.conv2D1 = layers.Conv2D(channels, (1,1))
         self.conv2D2 = layers.Conv2D(channels, (1,1))
@@ -96,16 +100,26 @@ class AttentionBlock(keras.Model):
         input_shape = x.shape
 
         # Down sampling
+        skip_outputs = []
         for down_unit in self.down_sampling_units:
+            skip_outputs.append(x)
             x = down_unit(x)
+
             for res_unit in self.r_residual_units:
                 x = res_unit(x)
 
-        # Up sampling
-        for up_unit in self.up_sampling_units[:-1]:
+        # Up sampling with skip connections
+        skip_outputs = list(reversed(skip_outputs))
+
+        for i in range(len(self.up_sampling_units)-1):
+            up_unit = self.up_sampling_units[i]
             x = up_unit(x)
+
             for res_unit in self.r_residual_units:
                 x = res_unit(x)
+
+            skip_unit = self.skip_sampling_units[i]
+            x = skip_unit([x, skip_outputs[i]])
 
         # Last up sampling, no res units after this up sampling.
         x = self.up_sampling_units[-1](x)
