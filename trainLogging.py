@@ -9,13 +9,6 @@ def getTrainAndTestSummaryWriters():
     test_summary_writer = tf.summary.create_file_writer(test_log_dir)
     return train_summary_writer, test_summary_writer
 
-def resetLogStates(train_loss, train_accuracy, test_loss, test_accuracy):
-    train_loss.reset_states()
-    train_accuracy.reset_states()
-    test_loss.reset_states()
-    test_accuracy.reset_states()
-    return train_loss, train_accuracy, test_loss, test_accuracy
-
 def printTrainingBatchProgress(epoch, epochs, n_batch, n_batches, train_loss, train_accuracy):
     template = '[Epoch {}/{}, Batch {}/{}] Loss: {:.3f}, Accuracy: {:.2%}'
     print(template.format(epoch, epochs, n_batch, n_batches, train_loss.result(), train_accuracy.result()), end='\r')

@@ -32,20 +32,23 @@ def testStep(model, x, y, loss_op, test_loss, test_accuracy):
     test_loss(loss)
     test_accuracy(y, predictions)
 
-def updateSummaryWriter(summary_writer, loss, epoch):
-    
-
-    return
-
-def train(model, x_train, y_train, x_test, y_test, loss_op, optimization, epochs):
-    # TODO: Make this a function
+def getTrainAndTestMetrics():
     train_loss = tf.keras.metrics.Mean(name='train_loss')
     train_accuracy = tf.keras.metrics.CategoricalAccuracy(name='train_accuracy')
     test_loss = tf.keras.metrics.Mean(name='test_loss')
     test_accuracy = tf.keras.metrics.CategoricalAccuracy(name='test_accuracy')
+    return train_loss, train_accuracy, test_loss, test_accuracy
 
+def resetMetrics(train_loss, train_accuracy, test_loss, test_accuracy):
+    train_loss.reset_states()
+    train_accuracy.reset_states()
+    test_loss.reset_states()
+    test_accuracy.reset_states()
+    return train_loss, train_accuracy, test_loss, test_accuracy
+
+def train(model, x_train, y_train, x_test, y_test, loss_op, optimization, epochs):
+    train_loss, train_accuracy, test_loss, test_accuracy = getTrainAndTestMetrics()
     train_summary_writer, test_summary_writer = trainLogging.getTrainAndTestSummaryWriters()
-
     n_batches = len(x_train)
 
     for epoch in range(epochs):
@@ -60,11 +63,7 @@ def train(model, x_train, y_train, x_test, y_test, loss_op, optimization, epochs
         trainLogging.printTrainingEpochProgress(epoch+1, epochs, n_batch, n_batches, train_loss, train_accuracy, test_loss, test_accuracy)
 
         # Reset the metrics for the next epoch
-        # TODO: Make this a function
-        train_loss.reset_states()
-        train_accuracy.reset_states()
-        test_loss.reset_states()
-        test_accuracy.reset_states()
+        train_loss, train_accuracy, test_loss, test_accuracy = resetMetrics(train_loss, train_accuracy, test_loss, test_accuracy)
 
     return model
 
