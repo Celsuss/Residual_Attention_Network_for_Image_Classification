@@ -3,6 +3,7 @@ import tensorflow.keras as keras
 import tensorflow as tf
 import numpy as np
 import utils
+import datetime
 import dataProcessing
 from models.model import AttentionResNet
 from models.refModel import RefConvNet
@@ -31,11 +32,33 @@ def testStep(model, x, y, loss_op, test_loss, test_accuracy):
     test_loss(loss)
     test_accuracy(y, predictions)
 
+def updateSummaryWriter(summary_writer, loss, epoch):
+    
+
+    return
+
+def printTrainingBatchProgress(epoch, epochs, n_batch, n_batches, train_loss, train_accuracy):
+    template = '[Epoch {}/{}, Batch {}/{}] Loss: {:.3f}, Accuracy: {:.2%}'
+    print(template.format(epoch, epochs, n_batch, n_batches, train_loss.result(), train_accuracy.result()), end='\r')
+
+def printTrainingEpochProgress(epoch, epochs, n_batch, n_batches, train_loss, train_accuracy, test_loss, test_accuracy):
+    template = '[Epoch {}] Loss: {:.3f}, Accuracy: {:.2%}, Test Loss: {:.3f}, Test Accuracy: {:.2%}'
+    print(template.format(epoch+1, train_loss.result(), train_accuracy.result(), test_loss.result(), test_accuracy.result()))
+
 def train(model, x_train, y_train, x_test, y_test, loss_op, optimization, epochs):
+    # TODO: Make this a function
     train_loss = tf.keras.metrics.Mean(name='train_loss')
     train_accuracy = tf.keras.metrics.CategoricalAccuracy(name='train_accuracy')
     test_loss = tf.keras.metrics.Mean(name='test_loss')
     test_accuracy = tf.keras.metrics.CategoricalAccuracy(name='test_accuracy')
+
+    # TODO: Make this a function
+    current_time = datetime.datetime.now().strftime('%Y%m%d-%H%M%S')
+    train_log_dir = 'logs/' + current_time + '/train'
+    test_log_dir = 'logs/' + current_time + '/test'
+    train_summary_writer = tf.summary.create_file_writer(train_log_dir)
+    test_summary_writer = tf.summary.create_file_writer(test_log_dir)
+
 
     n_batches = len(x_train)
 
@@ -43,15 +66,19 @@ def train(model, x_train, y_train, x_test, y_test, loss_op, optimization, epochs
         n_batch = 0
         for x, y in zip(x_train, y_train):
             n_batch+=1
-            template = '[Epoch {}/{}, Batch {}/{}] Loss: {:.3f}, Accuracy: {:.2%}'
-            print(template.format(epoch+1, epochs, n_batch, n_batches, train_loss.result(), train_accuracy.result()), end='\r')
+
+            printTrainingBatchProgress(epoch+1, epochs, n_batch, n_batches, train_loss, train_accuracy)
+            # template = '[Epoch {}/{}, Batch {}/{}] Loss: {:.3f}, Accuracy: {:.2%}'
+            # print(template.format(epoch+1, epochs, n_batch, n_batches, train_loss.result(), train_accuracy.result()), end='\r')
+
             trainStep(model, x, y, loss_op, optimization, train_loss, train_accuracy)
 
         testStep(model, x_test, y_test, loss_op, test_loss, test_accuracy)
 
-        template = '[Epoch {}] Loss: {:.3f}, Accuracy: {:.2%}, Test Loss: {:.3f}, Test Accuracy: {:.2%}'
-        print(template.format(epoch+1, train_loss.result(), train_accuracy.result(),
-                test_loss.result(), test_accuracy.result()))
+        # template = '[Epoch {}] Loss: {:.3f}, Accuracy: {:.2%}, Test Loss: {:.3f}, Test Accuracy: {:.2%}'
+        # print(template.format(epoch+1, train_loss.result(), train_accuracy.result(),
+        #         test_loss.result(), test_accuracy.result()))
+        printTrainingEpochProgress(epoch+1, epochs, n_batch, n_batches, train_loss, train_accuracy, test_loss, test_accuracy)
 
         # Reset the metrics for the next epoch
         train_loss.reset_states()
