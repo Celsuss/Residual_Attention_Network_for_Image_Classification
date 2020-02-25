@@ -17,15 +17,6 @@ def getData():
 
     return x_train, y_train, x_test, y_test
 
-def drawTestData(data, n_images):
-    for x_batch, y_batch in data:
-        images = x_batch[:n_images]
-        labels = y_batch[:n_images]
-        break
-
-    utils.drawImages(images, labels)
-    return 0
-
 def main():
     learning_rate = 0.001
     epochs = 5
@@ -37,7 +28,8 @@ def main():
     IMG_WIDTH = x_test.shape[2]
     CHANNELS = x_test.shape[3]
 
-    # drawTestData(train_data, 5)
+    n_draw_images = 5
+    utils.drawImages(x_train[:n_draw_images], y_train[:n_draw_images])
 
     # Reference model
     # model = RefConvNet(32, input_shape=(IMG_HEIGHT, IMG_WIDTH, CHANNELS))
