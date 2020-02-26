@@ -1,11 +1,12 @@
+from models.model import AttentionResNet
+from models.refModel import RefConvNet
 import tensorflow.keras as keras
 import tensorflow as tf
 import numpy as np
-import utils
-import training
 import dataProcessing
-from models.model import AttentionResNet
-from models.refModel import RefConvNet
+import training
+import utils
+import sys
 
 print('Tensorflow version: {}'.format(tf.__version__))
 
@@ -17,30 +18,42 @@ def getData():
 
     return x_train, y_train, x_test, y_test
 
+def readArgs(settings):
+    args = sys.argv[1:]
+    for arg in args:
+        if arg == '-d' or arg == '--draw':
+            settings['draw'] = True
+
+    return settings
+
 def main():
+    settings = {'draw': False}
+    settings = readArgs(settings)
+
     learning_rate = 0.001
     epochs = 5
     batch_size = 128
 
     x_train, y_train, x_test, y_test = getData()
 
-    IMG_HEIGHT = x_test.shape[1]
-    IMG_WIDTH = x_test.shape[2]
-    CHANNELS = x_test.shape[3]
+    img_height = x_test.shape[1]
+    img_width = x_test.shape[2]
+    channels = x_test.shape[3]
 
-    n_draw_images = 5
-    # utils.drawImages(x_train[:n_draw_images], y_train[:n_draw_images])
+    if settings['draw']:
+        n_draw_images = 5
+        utils.drawImages(x_train[:n_draw_images], y_train[:n_draw_images])
 
     x_train, y_train = dataProcessing.createBatches(x_train, y_train, batch_size)
 
     # Reference model
-    model = RefConvNet(32, input_shape=(IMG_HEIGHT, IMG_WIDTH, CHANNELS))
+    model = RefConvNet(32, input_shape=(img_height, img_width, channels))
     loss_op = keras.losses.CategoricalCrossentropy()
     optimizer = keras.optimizers.Adam(lr=learning_rate)
     training.train(model, x_train, y_train, x_test, y_test, loss_op, optimizer, epochs, model_save_path='model_weights', model_name='ref_model')
     
     # AttentionResNet
-    model = AttentionResNet((IMG_HEIGHT, IMG_WIDTH, CHANNELS))
+    model = AttentionResNet((img_height, img_width, channels))
     loss_op = keras.losses.CategoricalCrossentropy()
     optimizer = keras.optimizers.Adam(lr=learning_rate)
     training.train(model, x_train, y_train, x_test, y_test, loss_op, optimizer, epochs, model_save_path='model_weights', model_name='AttentionResNet')
