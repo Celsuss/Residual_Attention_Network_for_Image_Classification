@@ -29,22 +29,21 @@ def main():
     CHANNELS = x_test.shape[3]
 
     n_draw_images = 5
-    utils.drawImages(x_train[:n_draw_images], y_train[:n_draw_images])
-
-    # Reference model
-    # model = RefConvNet(32, input_shape=(IMG_HEIGHT, IMG_WIDTH, CHANNELS))
+    # utils.drawImages(x_train[:n_draw_images], y_train[:n_draw_images])
 
     x_train, y_train = dataProcessing.createBatches(x_train, y_train, batch_size)
 
-    # loss_op = keras.losses.CategoricalCrossentropy()
-    # optimizer = keras.optimizers.Adam(lr=learning_rate)
-    # train(model, x_train, y_train, x_test, y_test, loss_op, optimizer, epochs)
+    # Reference model
+    model = RefConvNet(32, input_shape=(IMG_HEIGHT, IMG_WIDTH, CHANNELS))
+    loss_op = keras.losses.CategoricalCrossentropy()
+    optimizer = keras.optimizers.Adam(lr=learning_rate)
+    training.train(model, x_train, y_train, x_test, y_test, loss_op, optimizer, epochs, model_save_path='model_weights', model_name='ref_model')
     
     # AttentionResNet
     model = AttentionResNet((IMG_HEIGHT, IMG_WIDTH, CHANNELS))
     loss_op = keras.losses.CategoricalCrossentropy()
     optimizer = keras.optimizers.Adam(lr=learning_rate)
-    training.train(model, x_train, y_train, x_test, y_test, loss_op, optimizer, epochs)
+    training.train(model, x_train, y_train, x_test, y_test, loss_op, optimizer, epochs, model_save_path='model_weights', model_name='AttentionResNet')
 
     return 0
 

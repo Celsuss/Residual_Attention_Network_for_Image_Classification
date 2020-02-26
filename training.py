@@ -1,5 +1,6 @@
 import tensorflow as tf
 import trainLogging
+import utils
 
 # TODO: Uncomment this, only for debuging
 # @tf.function
@@ -37,10 +38,12 @@ def resetMetrics(train_loss, train_accuracy, test_loss, test_accuracy):
     test_accuracy.reset_states()
     return train_loss, train_accuracy, test_loss, test_accuracy
 
-def train(model, x_train, y_train, x_test, y_test, loss_op, optimization, epochs):
+def train(model, x_train, y_train, x_test, y_test, loss_op, optimization, epochs, model_save_path='', model_name='model'):
     train_loss, train_accuracy, test_loss, test_accuracy = getTrainAndTestMetrics()
     train_summary_writer, test_summary_writer = trainLogging.getTrainAndTestSummaryWriters()
     n_batches = len(x_train)
+    
+    best_accuracy = 0
 
     for epoch in range(epochs):
         n_batch = 0
@@ -52,6 +55,11 @@ def train(model, x_train, y_train, x_test, y_test, loss_op, optimization, epochs
 
         testStep(model, x_test, y_test, loss_op, test_loss, test_accuracy)
         trainLogging.printTrainingEpochProgress(epoch+1, epochs, n_batch, n_batches, train_loss, train_accuracy, test_loss, test_accuracy)
+
+        if test_accuracy.result() > best_accuracy:
+            best_accuracy = test_accuracy.result()
+            utils.saveModel(model, model_save_path, model_name)
+            print('Saved new best model with accuracy: {}'.format(best_accuracy))
 
         # Reset the metrics for the next epoch
         train_loss, train_accuracy, test_loss, test_accuracy = resetMetrics(train_loss, train_accuracy, test_loss, test_accuracy)

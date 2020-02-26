@@ -1,9 +1,10 @@
-import math
-import pickle
-import numpy as np
-import tensorflow as tf
 import matplotlib.pyplot as plt
+import tensorflow as tf
+import numpy as np
 import dataProcessing
+import pickle
+import math
+import os
 
 def unpickle(file):
     with open(file, 'rb') as fo:
@@ -74,7 +75,22 @@ def drawImages(images, labels=None):
 
     plt.tight_layout()
     plt.show()
-    return 0
+
+def createPath(full_model_path):
+    paths = full_model_path.split('/')[:-1]
+    full_path = ''
+
+    for path in paths:
+        full_path = os.path.join(full_path, path)
+        if not os.path.isdir(full_path):
+            os.mkdir(full_path)
+
+def saveModel(model, path, model_name):
+    full_path = os.path.join(path, model_name, model_name + '.h5')
+    full_path = full_path.replace('\\', '/')
+    createPath(full_path)
+    model.save_weights(full_path)
+    tf.saved_model.save(model, full_path)
 
 if __name__ == '__main__':
     x_train, y_train, x_test, y_test = getMNISTDataset()
