@@ -30,7 +30,9 @@ def main():
     settings = {'draw': False}
     settings = readArgs(settings)
 
-    learning_rate = 0.001
+    learning_rate = 0.1
+    momentum = 0.9
+    weight_decay = 0.0001
     epochs = 5
     batch_size = 128
 
@@ -49,7 +51,8 @@ def main():
     # Reference model
     model = RefConvNet(32, input_shape=(img_height, img_width, channels))
     loss_op = keras.losses.CategoricalCrossentropy()
-    optimizer = keras.optimizers.Adam(lr=learning_rate)
+    # optimizer = keras.optimizers.SGD(learning_rate=learning_rate, momentum=momentum, nesterov=True )
+    optimizer = keras.optimizers.SGD(lr=learning_rate, decay=weight_decay, momentum=momentum, nesterov=True )
     training.train(model, x_train, y_train, x_test, y_test, loss_op, optimizer, epochs, model_save_path='model_weights', model_name='ref_model')
     
     # AttentionResNet
