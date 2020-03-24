@@ -38,6 +38,11 @@ def resetMetrics(train_loss, train_accuracy, test_loss, test_accuracy):
     test_accuracy.reset_states()
     return train_loss, train_accuracy, test_loss, test_accuracy
 
+def testModel(model, x, y):
+    train_loss, train_accuracy, test_loss, test_accuracy = getTrainAndTestMetrics()
+
+    return 0
+
 def train(model, x_train, y_train, x_test, y_test, loss_op, optimization, epochs, model_save_path='', model_name='model'):
     train_loss, train_accuracy, test_loss, test_accuracy = getTrainAndTestMetrics()
     train_summary_writer, test_summary_writer = trainLogging.getTrainAndTestSummaryWriters()

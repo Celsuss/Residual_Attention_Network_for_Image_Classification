@@ -90,7 +90,7 @@ def saveModel(model, path, model_name):
     full_path = full_path.replace('\\', '/')
     createPath(full_path)
     model.save_weights(full_path)
-    tf.saved_model.save(model, full_path)
+    # tf.saved_model.save(model, full_path)
 
 if __name__ == '__main__':
     x_train, y_train, x_test, y_test = getMNISTDataset()
