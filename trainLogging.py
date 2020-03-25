@@ -16,3 +16,7 @@ def printTrainingBatchProgress(epoch, epochs, n_batch, n_batches, train_loss, tr
 def printTrainingEpochProgress(epoch, epochs, n_batch, n_batches, train_loss, train_accuracy, test_loss, test_accuracy):
     template = '[Epoch {}] Loss: {:.3f}, Accuracy: {:.2%}, Test Loss: {:.3f}, Test Accuracy: {:.2%}'
     print(template.format(epoch+1, train_loss.result(), train_accuracy.result(), test_loss.result(), test_accuracy.result()))
+
+def printTesting(test_accuracy, model_name='model'):
+    template = '[Testing] Test Accuracy: {:.2%} for {}'
+    print(template.format(test_accuracy.result(), model_name))

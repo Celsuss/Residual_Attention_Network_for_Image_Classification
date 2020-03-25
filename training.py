@@ -38,8 +38,11 @@ def resetMetrics(train_loss, train_accuracy, test_loss, test_accuracy):
     test_accuracy.reset_states()
     return train_loss, train_accuracy, test_loss, test_accuracy
 
-def testModel(model, x, y):
+def testModel(model, x, y, model_name='model'):
     train_loss, train_accuracy, test_loss, test_accuracy = getTrainAndTestMetrics()
+    predictions = model(x)
+    test_accuracy(y, predictions)
+    trainLogging.printTesting(test_accuracy, model_name)
 
     return 0
 
