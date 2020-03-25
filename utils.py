@@ -84,13 +84,50 @@ def createPath(full_model_path):
         full_path = os.path.join(full_path, path)
         if not os.path.isdir(full_path):
             os.mkdir(full_path)
+        
+def isFile(file_path):
+    paths = file_path.split('/')
+    current_path = ''
+    
+    for path in paths:
+        current_path = os.path.join(current_path, path)
+        if os.path.isdir(current_path) is False and os.path.isfile(current_path) is False:
+            return False
+
+        continue
+
+    return True
 
 def saveModel(model, path, model_name):
-    full_path = os.path.join(path, model_name, model_name + '.h5')
-    full_path = full_path.replace('\\', '/')
-    createPath(full_path)
-    model.save_weights(full_path)
-    # tf.saved_model.save(model, full_path)
+    path = os.path.join(path, model_name)
+    path = path.replace('\\', '/')
+    createPath(path)
+    model_path = os.path.join(path, model_name + '_config.json')
+    weights_path = os.path.join(path, model_name + '_weights.h5')
+    model_path = path.replace('\\', '/')
+    weights_path = path.replace('\\', '/')
+
+    json_config = model.to_json()
+    if json_config is not None:
+        with open(model_path, 'w') as json_file:
+            json_file.write(json_config)
+
+    model.save_weights(weights_path)
+
+def loadModelWeights(model, path, model_name):
+    path = os.path.join(path, model_name)
+    path = path.replace('\\', '/')
+    createPath(path)
+    model_path = os.path.join(path, model_name + '_config.json')
+    weights_path = os.path.join(path, model_name + '_weights.h5')
+
+    with open(model_path) as json_file:
+        json_config = json_file.read()
+
+    new_model = tf.keras.models.model_from_json(json_config)
+    model.load_weights(weights_path)
+
+    return 0
 
 if __name__ == '__main__':
     x_train, y_train, x_test, y_test = getMNISTDataset()

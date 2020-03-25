@@ -37,3 +37,6 @@ class RefConvNet(keras.Model):
         x = tf.nn.softmax(x)
 
         return x
+
+    def to_json(self):
+        return None

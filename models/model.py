@@ -38,3 +38,6 @@ class AttentionResNet(keras.Model):
         x = self.dense2(x)
         x = tf.nn.softmax(x)
         return x
+
+    def to_json(self):
+        return None
