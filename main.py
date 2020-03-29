@@ -63,27 +63,20 @@ def main():
     drawImages(x_train, y_train, settings)
 
     x_train, y_train = dataProcessing.createBatches(x_train, y_train, hyperparameters['batch_size'])
-    
-    # json_config = model.to_json()
-    # utils.saveModel(model, 'test', 'test')
 
     # Reference model
     model = refModel.getRefConvNet(input_channels=32, input_shape=(32, 32, 3))
 
-    # if utils.isFile('model_weights/ref_model/ref_model.h5'):
-    #     model = utils.loadModelWeights(model, 'model_weights/ref_model', 'ref_model')
-    # else:
-    #     model = trainModel(model, x_train, y_train, x_test, y_test, hyperparameters, 'ref_model', save_keras_model=True)
+    if utils.isFile('model_weights/ref_model/ref_model.h5'):
+        model = utils.loadKerasModel('model_weights', 'ref_model')
+    else:
+        model = trainModel(model, x_train, y_train, x_test, y_test, hyperparameters, 'ref_model', save_keras_model=True)
     training.testModel(model, x_test, y_test, 'ref model')
     
     # AttentionResNet
     model = AttentionResNet((img_height, img_width, channels))
-    trainModel(model, x_train, y_train, x_test, y_test, hyperparameters, 'AttentionResNet', save_weights=True)
-
-    # loss_op = keras.losses.CategoricalCrossentropy()
-    # # optimizer = keras.optimizers.Adam(lr=learning_rate)
-    # optimizer = keras.optimizers.SGD(lr=learning_rate, decay=weight_decay, momentum=momentum, nesterov=True )
-    # model = training.train(model, x_train, y_train, x_test, y_test, loss_op, optimizer, epochs, model_save_path='model_weights', model_name='AttentionResNet')
+    model = trainModel(model, x_train, y_train, x_test, y_test, hyperparameters, 'AttentionResNet', save_weights=True)
+    training.testModel(model, x_test, y_test, 'AttentionResNet')
 
     return 0
 
