@@ -1,4 +1,3 @@
-''
 import tensorflow as tf
 import tensorflow.keras as keras
 import tensorflow.keras.layers as layers
@@ -40,3 +39,15 @@ class RefConvNet(keras.Model):
 
     def to_json(self):
         return None
+
+def getRefConvNet(input_channels=32, input_shape=(32, 32, 3)):
+    model = keras.models.Sequential()
+    model.add(layers.Conv2D(input_channels, (3,3), padding='same', activation='relu', input_shape=input_shape))
+    model.add(layers.MaxPool2D((2, 2)))
+    model.add(layers.Conv2D(input_channels*2, (3,3), padding='same', activation='relu'))
+    model.add(layers.MaxPool2D((2, 2)))
+    model.add(layers.Conv2D(input_channels*2, (3,3), padding='same', activation='relu'))
+    model.add(layers.Flatten())
+    model.add(layers.Dense(64, activation='relu'))
+    model.add(layers.Dense(10, activation='softmax'))
+    return model

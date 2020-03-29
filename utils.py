@@ -98,6 +98,13 @@ def isFile(file_path):
 
     return True
 
+def saveKerasModel(model, path, model_name):
+    path = os.path.join(path, model_name, model_name + '.h5')
+    path = path.replace('\\', '/')
+    createPath(path)
+    print('Saved model {}'.format(path))
+    model.save(path)
+
 def saveModel(model, path, model_name):
     path = os.path.join(path, model_name)
     path = path.replace('\\', '/')
@@ -113,6 +120,14 @@ def saveModel(model, path, model_name):
             json_file.write(json_config)
 
     model.save_weights(weights_path)
+
+def saveModelWeights(model, path, model_name):
+    path = os.path.join(path, model_name)
+    path = os.path.join(path, model_name + '_weights.h5')
+    path = path.replace('\\', '/')
+    createPath(path)
+    print('Saved model weights {}'.format(path))
+    model.save_weights(path)
 
 def loadModelWeights(model, path, model_name):
     path = os.path.join(path, model_name)

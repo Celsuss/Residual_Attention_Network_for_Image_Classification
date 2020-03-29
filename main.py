@@ -1,5 +1,6 @@
 from models.model import AttentionResNet
 from models.refModel import RefConvNet
+from models import refModel
 import tensorflow.keras as keras
 import tensorflow as tf
 import numpy as np
@@ -7,6 +8,7 @@ import dataProcessing
 import training
 import utils
 import sys
+
 
 print('Tensorflow version: {}'.format(tf.__version__))
 
@@ -26,7 +28,7 @@ def readArgs(settings):
 
     return settings
 
-def trainModel(model, x_train, y_train, x_test, y_test, hyperparameters, name):
+def trainModel(model, x_train, y_train, x_test, y_test, hyperparameters, name, save_weights=False, save_keras_model=False, model_save_path='model_weights'):
     learning_rate = hyperparameters['learning_rate']
     momentum = hyperparameters['momentum']
     weight_decay = hyperparameters['weight_decay']
@@ -35,7 +37,8 @@ def trainModel(model, x_train, y_train, x_test, y_test, hyperparameters, name):
     loss_op = keras.losses.CategoricalCrossentropy()
     optimizer = keras.optimizers.SGD(lr=learning_rate, decay=weight_decay, momentum=momentum, nesterov=True)
 
-    model = training.train(model, x_train, y_train, x_test, y_test, loss_op, optimizer, epochs, model_save_path='model_weights', model_name=name)
+    model = training.train(model, x_train, y_train, x_test, y_test, loss_op, optimizer, epochs, model_save_path=model_save_path, model_name=name, save_weights=save_weights, save_keras_model=save_keras_model)
+    return model
 
 def drawImages(x_train, y_train, settings):
     if settings['draw']:
@@ -50,7 +53,7 @@ def main():
     hyperparameters['learning_rate'] = 0.1
     hyperparameters['momentum'] = 0.9
     hyperparameters['weight_decay'] = 0.0001
-    hyperparameters['epochs'] = 5
+    hyperparameters['epochs'] = 1 # 5
     hyperparameters['batch_size'] = 128
 
     x_train, y_train, x_test, y_test = getData()
@@ -60,14 +63,22 @@ def main():
     drawImages(x_train, y_train, settings)
 
     x_train, y_train = dataProcessing.createBatches(x_train, y_train, hyperparameters['batch_size'])
+    
+    # json_config = model.to_json()
+    # utils.saveModel(model, 'test', 'test')
 
     # Reference model
-    model = RefConvNet(32, input_shape=(img_height, img_width, channels))
-    trainModel(model, x_train, y_train, x_test, y_test, hyperparameters, 'ref_model')
+    model = refModel.getRefConvNet(input_channels=32, input_shape=(32, 32, 3))
+
+    # if utils.isFile('model_weights/ref_model/ref_model.h5'):
+    #     model = utils.loadModelWeights(model, 'model_weights/ref_model', 'ref_model')
+    # else:
+    #     model = trainModel(model, x_train, y_train, x_test, y_test, hyperparameters, 'ref_model', save_keras_model=True)
+    training.testModel(model, x_test, y_test, 'ref model')
     
     # AttentionResNet
     model = AttentionResNet((img_height, img_width, channels))
-    trainModel(model, x_train, y_train, x_test, y_test, hyperparameters, 'AttentionResNet')
+    trainModel(model, x_train, y_train, x_test, y_test, hyperparameters, 'AttentionResNet', save_weights=True)
 
     # loss_op = keras.losses.CategoricalCrossentropy()
     # # optimizer = keras.optimizers.Adam(lr=learning_rate)
