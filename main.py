@@ -75,10 +75,10 @@ def main():
     # AttentionResNet
     model = AttentionResNet((img_height, img_width, channels))
 
-    if utils.isFile('model_weights\AttentionResNet\AttentionResNet_weights.h5'):
-        model = utils.loadModelWeights(model, 'model_weights', 'AttentionResNet')
-    else:
-        model = trainModel(model, x_train, y_train, x_test, y_test, hyperparameters, 'AttentionResNet', save_weights=True)
+    # if utils.isFile('model_weights\AttentionResNet\AttentionResNet_weights.h5'):
+    #     model = utils.loadModelWeights(model, 'model_weights', 'AttentionResNet')
+    # else:
+    model = trainModel(model, x_train, y_train, x_test, y_test, hyperparameters, 'AttentionResNet', save_weights=True)
         
     training.testModel(model, x_test, y_test, 'AttentionResNet')
 
