@@ -53,7 +53,7 @@ def main():
     hyperparameters['learning_rate'] = 0.1
     hyperparameters['momentum'] = 0.9
     hyperparameters['weight_decay'] = 0.0001
-    hyperparameters['epochs'] = 1 # 5
+    hyperparameters['epochs'] = 50
     hyperparameters['batch_size'] = 128
 
     x_train, y_train, x_test, y_test = getData()
@@ -65,17 +65,21 @@ def main():
     x_train, y_train = dataProcessing.createBatches(x_train, y_train, hyperparameters['batch_size'])
 
     # Reference model
-    model = refModel.getRefConvNet(input_channels=32, input_shape=(32, 32, 3))
-
     if utils.isFile('model_weights/ref_model/ref_model.h5'):
         model = utils.loadKerasModel('model_weights', 'ref_model')
     else:
+        model = refModel.getRefConvNet(input_channels=32, input_shape=(32, 32, 3))
         model = trainModel(model, x_train, y_train, x_test, y_test, hyperparameters, 'ref_model', save_keras_model=True)
     training.testModel(model, x_test, y_test, 'ref model')
     
     # AttentionResNet
     model = AttentionResNet((img_height, img_width, channels))
-    model = trainModel(model, x_train, y_train, x_test, y_test, hyperparameters, 'AttentionResNet', save_weights=True)
+
+    if utils.isFile('model_weights\AttentionResNet\AttentionResNet_weights.h5'):
+        model = utils.loadModelWeights(model, 'model_weights', 'AttentionResNet')
+    else:
+        model = trainModel(model, x_train, y_train, x_test, y_test, hyperparameters, 'AttentionResNet', save_weights=True)
+        
     training.testModel(model, x_test, y_test, 'AttentionResNet')
 
     return 0

@@ -52,6 +52,7 @@ def train(model, x_train, y_train, x_test, y_test, loss_op, optimization, epochs
     n_batches = len(x_train)
     
     best_accuracy = 0
+    best_model = None
 
     for epoch in range(epochs):
         n_batch = 0
@@ -66,6 +67,7 @@ def train(model, x_train, y_train, x_test, y_test, loss_op, optimization, epochs
 
         if test_accuracy.result() > best_accuracy:
             best_accuracy = test_accuracy.result()
+            best_model = model
             if save_weights is True:
                 utils.saveModelWeights(model, model_save_path, model_name)
             if save_keras_model is True:
@@ -76,4 +78,4 @@ def train(model, x_train, y_train, x_test, y_test, loss_op, optimization, epochs
         # Reset the metrics for the next epoch
         train_loss, train_accuracy, test_loss, test_accuracy = resetMetrics(train_loss, train_accuracy, test_loss, test_accuracy)
 
-    return model
+    return best_model

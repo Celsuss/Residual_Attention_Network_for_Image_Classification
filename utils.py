@@ -127,7 +127,9 @@ def saveModelWeights(model, path, model_name):
     path = path.replace('\\', '/')
     createPath(path)
     print('Saved model weights {}'.format(path))
-    model.save_weights(path)
+
+    # model.save_weights(path)
+    c(path)
 
 def loadKerasModel(path, model_name):
     path = os.path.join(path, model_name, model_name + '.h5')
@@ -140,16 +142,11 @@ def loadModelWeights(model, path, model_name):
     path = os.path.join(path, model_name)
     path = path.replace('\\', '/')
     createPath(path)
-    model_path = os.path.join(path, model_name + '_config.json')
-    weights_path = os.path.join(path, model_name + '_weights.h5')
+    path = os.path.join(path, model_name + '_weights.h5')
+    path = path.replace('\\', '/')
 
-    with open(model_path) as json_file:
-        json_config = json_file.read()
-
-    new_model = tf.keras.models.model_from_json(json_config)
-    model.load_weights(weights_path)
-
-    return 0
+    model.load_weights(path)
+    return model
 
 if __name__ == '__main__':
     x_train, y_train, x_test, y_test = getMNISTDataset()
