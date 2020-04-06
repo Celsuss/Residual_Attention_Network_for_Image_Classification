@@ -128,8 +128,7 @@ def saveModelWeights(model, path, model_name):
     createPath(path)
     print('Saved model weights {}'.format(path))
 
-    # model.save_weights(path)
-    c(path)
+    model.save_model_weights_tf(path)
 
 def loadKerasModel(path, model_name):
     path = os.path.join(path, model_name, model_name + '.h5')
@@ -146,6 +145,7 @@ def loadModelWeights(model, path, model_name):
     path = path.replace('\\', '/')
 
     model.load_weights(path)
+
     return model
 
 if __name__ == '__main__':
