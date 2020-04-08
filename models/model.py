@@ -41,3 +41,6 @@ class AttentionResNet(keras.Model):
 
     def to_json(self):
         return None
+
+
+

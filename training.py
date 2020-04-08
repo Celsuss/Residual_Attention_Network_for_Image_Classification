@@ -47,6 +47,7 @@ def testModel(model, x, y, model_name='model'):
     return 0
 
 def train(model, x_train, y_train, x_test, y_test, loss_op, optimization, epochs, model_save_path='', model_name='model', save_weights=False, save_keras_model=False):
+    print('Starting training for model {}'.format(model_name))
     train_loss, train_accuracy, test_loss, test_accuracy = getTrainAndTestMetrics()
     train_summary_writer, test_summary_writer = trainLogging.getTrainAndTestSummaryWriters()
     n_batches = len(x_train)

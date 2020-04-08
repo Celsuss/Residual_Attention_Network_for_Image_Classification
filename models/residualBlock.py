@@ -5,8 +5,6 @@ import tensorflow.keras.layers as layers
 class ResidualBlock(keras.Model):
     def __init__(self, input_channels=64, output_channels=64, kernel_size=(3, 3), strides=(1, 1)):
         super(ResidualBlock, self).__init__()
-        # output_channels = x.getshape()[-1].value
-        # input_channels = output_channels // 4
 
         self.skip_add = layers.Add()
 
