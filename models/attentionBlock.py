@@ -65,10 +65,6 @@ class AttentionBlock(keras.Model):
         Output Hi,c(x) = (1 + Mi,c(x)) ∗ Fi,c(x)
         """
 
-        # if input_channels is None:
-        #     input_channels = x.get_shape()[-1]
-        #     output_channels = input_channels // 4
-
         for res_unit in self.p_residual_units:
             x = res_unit(x)
 
@@ -86,9 +82,7 @@ class AttentionBlock(keras.Model):
         return x
 
     def trunkBranch(self, x):
-        # Convolutions
-        # Use the residual block?
-
+        # Feature generation
         for res_unit in self.t_residual_units:
             x = res_unit(x)
 
