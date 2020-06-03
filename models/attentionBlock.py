@@ -93,29 +93,66 @@ class AttentionBlock(keras.Model):
         input_shape = x.shape
 
         # Down sampling
-        skip_outputs = []
-        for down_unit in self.down_sampling_units:
-            skip_outputs.append(x)
-            x = down_unit(x)
+        # First down sampling
+        x = self.down_sampling_units[0](x)
+        for res_unit in self.r_residual_units:
+            x = res_unit(x)
 
+        skip_outputs = []
+        for down_unit in self.down_sampling_units[1:]:
+            # Skip connections
+            # x = resBlock
+            skip_outputs.append(x)
+
+            # Down sampling
+            x = down_unit(x)
             for res_unit in self.r_residual_units:
                 x = res_unit(x)
-
+        
         # Up sampling with skip connections
         skip_outputs = list(reversed(skip_outputs))
-
         for i in range(len(self.up_sampling_units)-1):
+            # Upsampling
             up_unit = self.up_sampling_units[i]
-            x = up_unit(x)
-
             for res_unit in self.r_residual_units:
                 x = res_unit(x)
+            x = up_unit(x)
 
+            # Skip connections
             skip_unit = self.skip_sampling_units[i]
             x = skip_unit([x, skip_outputs[i]])
 
-        # Last up sampling, no res units after this up sampling.
+        # Last upsampling
+        for res_unit in self.r_residual_units:
+            x = res_unit(x)
         x = self.up_sampling_units[-1](x)
+
+
+
+        # # Down sampling
+        # skip_outputs = []
+        # for down_unit in self.down_sampling_units:
+        #     skip_outputs.append(x)
+        #     x = down_unit(x)
+
+        #     for res_unit in self.r_residual_units:
+        #         x = res_unit(x)
+
+        # # Up sampling with skip connections
+        # skip_outputs = list(reversed(skip_outputs))
+
+        # for i in range(len(self.up_sampling_units)-1):
+        #     up_unit = self.up_sampling_units[i]
+        #     x = up_unit(x)
+
+        #     for res_unit in self.r_residual_units:
+        #         x = res_unit(x)
+
+        #     skip_unit = self.skip_sampling_units[i]
+        #     x = skip_unit([x, skip_outputs[i]])
+
+        # # Last up sampling, no res units after this up sampling.
+        # x = self.up_sampling_units[-1](x)
 
         # The number of bilinear interpolation is the same
         # as max pooling to keep the output size the same as the input

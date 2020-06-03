@@ -34,6 +34,7 @@ class ResidualBlock(keras.Model):
         x = tf.nn.relu(x)
         x = self.conv2D3(x)
 
+        # if input_channels != output_channels or stride != 1:
         if self.conv2D4 is not None:
             input = self.conv2D4(input)
 

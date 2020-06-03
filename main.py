@@ -13,10 +13,10 @@ import sys
 print('Tensorflow version: {}'.format(tf.__version__))
 
 def getData():
-    # x_train, y_train, x_test, y_test = utils.getCifar10Dataset()
-    x_train, y_train, x_test, y_test = utils.getMNISTDataset()
+    x_train, y_train, x_test, y_test = utils.getCifar10Dataset()
+    # x_train, y_train, x_test, y_test = utils.getMNISTDataset()
 
-    x_train, y_train, x_test, y_test = dataProcessing.preprocessData(x_train, y_train, x_test, y_test, batch_size=128)
+    x_train, y_train, x_test, y_test = dataProcessing.preprocessData(x_train, y_train, x_test, y_test)
 
     return x_train, y_train, x_test, y_test
 
@@ -50,7 +50,7 @@ def main():
     settings = readArgs(settings)
 
     hyperparameters = {}
-    hyperparameters['learning_rate'] = 0.1
+    hyperparameters['learning_rate'] = 0.001
     hyperparameters['momentum'] = 0.9
     hyperparameters['weight_decay'] = 0.0001
     hyperparameters['epochs'] = 50
@@ -62,16 +62,17 @@ def main():
     img_width = x_train.shape[2]
     channels = x_train.shape[3]
     drawImages(x_train, y_train, settings)
+    print('Input data has shape {}'.format(data_shape))
 
     x_train, y_train = dataProcessing.createBatches(x_train, y_train, hyperparameters['batch_size'])
 
     # Reference model
-    if utils.isFile('model_weights/ref_model/ref_model.h5'):
-        model = utils.loadKerasModel('model_weights', 'ref_model')
-    else:
-        model = refModel.getRefConvNet(input_channels=32, input_shape=data_shape)
-        model = trainModel(model, x_train, y_train, x_test, y_test, hyperparameters, 'ref_model', save_keras_model=True)
-    training.testModel(model, x_test, y_test, 'ref model')
+    # if utils.isFile('model_weights/ref_model/ref_model.h5'):
+    #     model = utils.loadKerasModel('model_weights', 'ref_model')
+    # else:
+    #     model = refModel.getRefConvNet(input_channels=32, input_shape=data_shape)
+    #     model = trainModel(model, x_train, y_train, x_test, y_test, hyperparameters, 'ref_model', save_keras_model=True)
+    # training.testModel(model, x_test, y_test, 'ref model')
     
     # AttentionResNet
     model = AttentionResNet((img_height, img_width, channels))

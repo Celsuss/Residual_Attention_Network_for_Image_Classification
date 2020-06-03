@@ -8,7 +8,7 @@ def normalize(x):
     x = x / 255.0
     return x
 
-def preprocessData(x_train, y_train, x_test, y_test, batch_size=128):
+def preprocessData(x_train, y_train, x_test, y_test):
     x_train = normalize(x_train)
     x_test = normalize(x_test)
 

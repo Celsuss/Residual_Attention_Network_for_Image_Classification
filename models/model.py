@@ -18,24 +18,24 @@ class AttentionResNet(keras.Model):
         self.attention1 = AttentionBlock(64)
         #
 
-        self.dense1 = layers.Dense(128)
+        self.dense1 = layers.Dense(4096) # 128
         self.dense2 = layers.Dense(10)
 
-    def call(self, x):
-        x = self.conv1(x)
+    def call(self, x):          # 32, 32, 3
+        x = self.conv1(x)       # 16, 16, 64   
         x = self.batchNorm(x)
         x = tf.nn.relu(x)
-        x = self.pool1(x)
+        x = self.pool1(x)       # 8, 8, 64
 
         # Add res and attention blocks here
-        x = self.res1(x)
-        x = self.attention1(x)
+        x = self.res1(x)        # 8, 8, 64
+        x = self.attention1(x)  # 8, 8, 64
         #
 
-        x = self.flatten(x)
-        x = self.dense1(x)
+        x = self.flatten(x)     # 4096
+        x = self.dense1(x)      # ? 128
         x = tf.nn.relu(x)
-        x = self.dense2(x)
+        x = self.dense2(x)      # 10
         x = tf.nn.softmax(x)
         return x
 
