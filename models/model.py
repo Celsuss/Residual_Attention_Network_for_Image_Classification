@@ -24,7 +24,7 @@ class AttentionResNet(keras.Model):
         for i in range(blocks):
             self.resBlocks.append(ResidualBlock())
             self.attentionBlocks.append(AttentionBlock(channels))
-            channels *= 2
+            # channels *= 2
         #
 
         self.dense1 = layers.Dense(channels/2) # 128

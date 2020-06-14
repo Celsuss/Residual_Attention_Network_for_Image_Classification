@@ -19,7 +19,7 @@ class ResidualBlock(keras.Model):
             self.conv2D4 = None
 
     def call(self, x):
-        input_shape = x.shape
+        input_shape = x.shape   # 9
         input = x
 
         x = self.batchNorm(x)
