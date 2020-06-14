@@ -75,7 +75,7 @@ def main():
     # training.testModel(model, x_test, y_test, 'ref model')
     
     # AttentionResNet
-    model = AttentionResNet((img_height, img_width, channels))
+    model = AttentionResNet((img_height, img_width, channels), blocks=4)
 
     # if utils.isFile('model_weights\AttentionResNet\AttentionResNet_weights.h5'):
     #     model = utils.loadModelWeights(model, 'model_weights', 'AttentionResNet')
