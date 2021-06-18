@@ -1,0 +1,7 @@
+version: "3.9"
+
+services:
+    training-service:
+        build: .
+        volumes: 
+            - .:/app
