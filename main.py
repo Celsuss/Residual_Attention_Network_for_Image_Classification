@@ -9,7 +9,6 @@ import training
 import utils
 import sys
 
-
 print('Tensorflow version: {}'.format(tf.__version__))
 
 def getData():
