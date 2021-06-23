@@ -10,6 +10,7 @@ import utils
 import sys
 
 print('Tensorflow version: {}'.format(tf.__version__))
+print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
 
 def getData():
     x_train, y_train, x_test, y_test = utils.getCifar10Dataset()
