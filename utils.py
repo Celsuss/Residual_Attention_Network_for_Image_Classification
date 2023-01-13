@@ -58,8 +58,8 @@ def drawImages(images, labels=None):
     if images.shape[3] == 1:
         images = images.reshape(images.shape[0], images.shape[1], images.shape[2])
 
-    n_rows = math.floor(len(images)/2)
-    n_columns = math.ceil(len(images)/2)
+    n_rows = 2
+    n_columns = math.floor(len(images)/2)
     fig, axes = plt.subplots(n_rows, n_columns, figsize=(8,8))
     axes = axes.flatten()
 
