@@ -1,0 +1,18 @@
+version: '3.9'
+services:
+  db:
+    # container_name: mysql
+    # image: mysql/mysql-server:latest
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+      - "33060:33060"
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: mlflow
+    restart: always
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+
+volumes:
+  mysql-data:
