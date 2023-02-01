@@ -9,3 +9,7 @@ test/*
 # Storage 
 s3-data/*
 mysql-data/*
+mlruns/*
+
+# SQL file
+mysql.session.sql
