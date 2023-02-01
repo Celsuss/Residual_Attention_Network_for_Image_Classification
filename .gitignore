@@ -5,3 +5,7 @@ models/__pycache__/*
 logs/*
 model_weights/*
 test/*
+
+# Storage 
+s3-data/*
+mysql-data/*
