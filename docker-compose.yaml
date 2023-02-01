@@ -1,5 +1,15 @@
 version: '3.9'
-services:
+services:  
+  mlflo-serverw:
+    container_name: mlflow server
+    image: mlflow:v2.0.1
+    ports:
+     - "5000:5000"
+    command:
+      - mlflow server --backend-store-uri mysql+pymysql://root:password@db:3306/mlflow 
+    # networks:
+    #   - net
+
   db:
     container_name: mysql
     # image: mysql/mysql-server:latest
@@ -8,27 +18,33 @@ services:
       - "3306:3306"
       - "33060:33060"
     environment:
-      MYSQL_ROOT_PASSWORD: example
+      MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: mlflow
     # restart: always
     volumes:
       - ./mysql-data:/var/lib/mysql
-    networks:
-     - net
-  
-  # mlflow:
-  #   container_name: mlflow
-  #   image: mlflow:v2.0.1
-  #   ports:
-  #    - "5000:5000"
-  #   networks:
-  #     - net
-  #   command:
-  #   -  mlflow ui --backend-store-uri mysql+pymysql://root:example@db:3306/mlflow 
+    # networks:
+    #  - net
     
-networks:
-  net:
-    driver: bridge
+  minio-s3:
+    container_name: minio-s3
+    image: minio/minio
+    ports:
+      - "9000:9000"
+      - "9090:9090"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: root
+      MINIO_ROOT_PASSWORD: password
+    volumes:
+      - ./s3-data:/data
+    command: server --console-address ":9001" /data
+
+# networks:
+#   net:
+#     driver: bridge
 
 volumes:
   mysql-data:
+  s3-data:
+
