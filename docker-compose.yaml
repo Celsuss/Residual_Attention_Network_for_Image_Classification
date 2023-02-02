@@ -1,12 +1,21 @@
 version: '3.9'
 services:  
-  mlflo-serverw:
+  mlflo-server:
+  # TODO: Create custom dockerfile for mlflow
     container_name: mlflow server
     image: mlflow:v2.0.1
     ports:
      - "5000:5000"
-    command:
-      - mlflow server --backend-store-uri mysql+pymysql://root:password@db:3306/mlflow 
+    environment:
+      - MLFLOW_S3_ENDPOINT_URL: http://minio-s3:9000
+      - AWS_SECRET_KEY_ID: access_key
+      - AWS_SECRET_ACCESS_KEY: secret_key
+    depends_on:
+      - minio-s3
+    command: >
+      mlflow server 
+      --backend-store-uri mysql+pymysql://root:password@db:3306/mlflow 
+      --default-artifact-root s3://mlflow
     # networks:
     #   - net
 
@@ -20,22 +29,24 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: mlflow
-    # restart: always
     volumes:
       - ./mysql-data:/var/lib/mysql
     # networks:
     #  - net
     
   minio-s3:
+  # TODO: Do health check?
     container_name: minio-s3
     image: minio/minio
     ports:
       - "9000:9000"
       - "9090:9090"
-      - "9001:9001"
+      - "9001:9001" 
     environment:
       MINIO_ROOT_USER: root
       MINIO_ROOT_PASSWORD: password
+      MINIO_ACCESS_KEY: access_key
+      MINIO_SECRET_KEY: secret_key
     volumes:
       - ./s3-data:/data
     command: server --console-address ":9001" /data
